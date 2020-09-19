@@ -56,13 +56,12 @@ passport.use(
             done({type: 'email', message: 'No such user found'}, false);
             return;
           }
-          console.log("LOGGING IN")
-
-          if(user.password == password){//bcrypt.compareSync(password, user.password)){
+          if(password == user.password){//bcrypt.compareSync(password, user.password)){
             console.log("LOGGED IN")
             done(null, {id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName})
 
           } else{
+              console.log("ERRRRRRORROROROROROROR")
             done({type: 'password', message: 'Password or Email is incorrect'}, false)
           }
         }));
@@ -83,12 +82,12 @@ passport.use('local.signup',
           }
           const {fullName} = req.body;
 
-          const salt = await bcrypt.genSalt(10);
-          const encryptedPassword = await bcrypt.hash(password, salt);
+          // const salt = await bcrypt.genSalt(10);
+          // const encryptedPassword = await bcrypt.hash(password, salt);
 
           user = new User({
             email,
-            password: encryptedPassword,
+            password,//: encryptedPassword,
             fullName,
           })
 
@@ -109,7 +108,7 @@ index.use(session({
 }))
 
 index.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "https://fit-beat-depresso.herokuapp.com");//process.env.NODE_ENV === "production" ? "https://fit-beat-depresso.herokuapp.com" : 'http://localhost:3000');
+    res.header("Access-Control-Allow-Origin", process.env.NODE_ENV === "production" ? "https://fit-beat-depresso.herokuapp.com" : 'http://localhost:3000');
     res.header("Access-Control-Allow-Credentials", true);
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
     res.header("Access-Control-Allow-Headers", 'Origin,X-Requested-With,Content-Type,Accept,content-type');
@@ -162,14 +161,21 @@ index.get('/getConnections', (req, res) => {
   }
 })
 
-index.post('/addConnections', async (req, res) => {
+index.post('/addConnection', async (req, res) => {
   if(req.user){
     const {email} = req.body;
-    var invitee = await User.findOne({email})
+    var invitee = await User.findOneAndUpdate({email}, {$push: {connections: req.user.id}});
+    console.log(invitee)
     await User.findOneAndUpdate({_id: req.user.id}, {$push: {connections: invitee.id}});
+    res.json({
+        message: "Success"
+    })
   }
   else{
-    res.redirect('/login');
+    res.status(401)
+      res.json({
+          message: 'Error logging in'
+      })
   }
 })
 
