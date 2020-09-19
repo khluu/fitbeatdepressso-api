@@ -74,14 +74,14 @@ passport.use('local.signup',
           passReqToCallback: true,
         },
         async (req, email, password, done) => {
-
+        console.log("HERE INSIDDDDE ------ ----- SIGNUP", email, password);
           let user = null;
           user = await User.findOne({email});
           if(user){
             done({type: 'email', message:'Email already exists'}, false);
             return;
           }
-          const {firstName, lastName} = req.body;
+          const {fullName} = req.body;
 
           const salt = await bcrypt.genSalt(10);
           const encryptedPassword = await bcrypt.hash(password, salt);
@@ -89,13 +89,12 @@ passport.use('local.signup',
           user = new User({
             email,
             password: encryptedPassword,
-            firstName,
-            lastName,
+            fullName,
           })
 
           await user.save();
 
-          done(null, {id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName});
+          done(null, {id: user.id, email: user.email, fullName});
 
         }));
 
@@ -109,7 +108,7 @@ index.use(session({
 }))
 
 index.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", 'https://fit-beat-depresso.herokuapp.com');
+    res.header("Access-Control-Allow-Origin", process.env.NODE_ENV === "production" ? "https://fit-beat-depresso.herokuapp.com" : 'http://localhost:3000');
     res.header("Access-Control-Allow-Credentials", true);
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
     res.header("Access-Control-Allow-Headers", 'Origin,X-Requested-With,Content-Type,Accept,content-type');
