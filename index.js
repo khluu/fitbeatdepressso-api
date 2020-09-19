@@ -24,10 +24,14 @@ const passport = require("passport");
 const FitbitStrategy = require('passport-fitbit-oauth2').FitbitOAuth2Strategy
 
 passport.serializeUser((user, cb) => {
+    console.log("SERIALIZING USER")
+    console.log(JSON.stringify(user))
   cb(null, user);
 });
 
 passport.deserializeUser((user, cb) => {
+    console.log("DESIRIALIZING USER")
+    console.log(JSON.stringify(user))
   cb(null, user);
 });
 
@@ -58,7 +62,7 @@ passport.use(
           }
           if(password == user.password){//bcrypt.compareSync(password, user.password)){
             console.log("LOGGED IN")
-            done(null, {id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName})
+            done(null, {id: user.id, email: user.email, fullName: user.fullName})
 
           } else{
               console.log("ERRRRRRORROROROROROROR")
@@ -119,6 +123,7 @@ index.use(function(req, res, next) {
 index.use(bodyParser.json());
 index.use(morgan('combined'))
 index.use(passport.initialize());
+index.use(passport.session());
 
 //routes go here with index.{method}
 
@@ -136,6 +141,12 @@ index.get('/auth/fitbit/callback', passport.authenticate('fitbit', {
 index.post('/auth/local/login',
     passport.authenticate('local'),
     function(req, res) {
+        console.log(req.user)
+        req.login(req.user, function(err) {
+            if (err) { return next(err); }
+            console.log("LOGGGED INNNNNNNN")
+            return;
+        });
       res.json({
         user: req.user,
       })
@@ -162,6 +173,8 @@ index.get('/getConnections', (req, res) => {
 })
 
 index.post('/addConnection', async (req, res) => {
+    console.log(req.user);
+    console.log(req.isAuthenticated())
   if(req.user){
     const {email} = req.body;
     var invitee = await User.findOneAndUpdate({email}, {$push: {connections: req.user.id}});
