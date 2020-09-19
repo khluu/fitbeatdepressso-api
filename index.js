@@ -145,7 +145,9 @@ index.post('/auth/local/login',
 index.post('/auth/local/signup',
     passport.authenticate('local.signup'),
     function(req, res) {
-      res.redirect('/');
+      res.json({
+          user: req.user,
+      })
     });
 
 index.get('/getConnections', (req, res) => {
