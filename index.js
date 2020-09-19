@@ -94,7 +94,8 @@ passport.use('local.signup',
 
           await user.save();
 
-          done(null, {id: user.id, email: user.email, fullName});
+          console.log("DONNE")
+          done(null, {id: user.id, email: user.email, fullName: user.fullName});
 
         }));
 
