@@ -100,33 +100,33 @@ passport.use('local.signup',
         }));
 
 
-const app = express();
+const index = express();
 
-app.use(session({
+index.use(session({
   secret: 'keyboard cat',
   resave: false,
   saveUninitialized: true
 }))
 
-// app.use(cors);
-app.use(bodyParser.json());
-app.use(morgan('combined'))
-app.use(passport.initialize());
+// index.use(cors);
+index.use(bodyParser.json());
+index.use(morgan('combined'))
+index.use(passport.initialize());
 
-//routes go here with app.{method}
+//routes go here with index.{method}
 
-app.get('/testing', (req, res) => {
+index.get('/testing', (req, res) => {
   res.send("HELLO");
 })
 
-app.get('/auth/fitbit', passport.authenticate('fitbit', {scope: ['activity', 'heartrate', 'sleep', 'profile', 'settings']}));
+index.get('/auth/fitbit', passport.authenticate('fitbit', {scope: ['activity', 'heartrate', 'sleep', 'profile', 'settings']}));
 
-app.get('/auth/fitbit/callback', passport.authenticate('fitbit', {
+index.get('/auth/fitbit/callback', passport.authenticate('fitbit', {
   successRedirect: '/',
   failureRedirect: '/',
 }))
 
-app.post('/auth/local/login',
+index.post('/auth/local/login',
     passport.authenticate('local'),
     function(req, res) {
       res.json({
@@ -134,13 +134,13 @@ app.post('/auth/local/login',
       })
     });
 
-app.post('/auth/local/signup',
+index.post('/auth/local/signup',
     passport.authenticate('local.signup'),
     function(req, res) {
       res.redirect('/');
     });
 
-app.get('/getConnections', (req, res) => {
+index.get('/getConnections', (req, res) => {
   if(req.user){
     var user = User.findById(req.user.id).populate('connections')
     res.body = {
@@ -152,7 +152,7 @@ app.get('/getConnections', (req, res) => {
   }
 })
 
-app.post('/addConnections', async (req, res) => {
+index.post('/addConnections', async (req, res) => {
   if(req.user){
     const {email} = req.body;
     var invitee = await User.findOne({email})
@@ -163,9 +163,9 @@ app.post('/addConnections', async (req, res) => {
   }
 })
 
-// app.use(express.static(path.join(__dirname, '../client/build')));
+// index.use(express.static(path.join(__dirname, '../client/build')));
 //
-// app.get('*', function(req, res) {
+// index.get('*', function(req, res) {
 //   res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
 // });
 
@@ -183,7 +183,7 @@ app.post('/addConnections', async (req, res) => {
 //         ca: ca
 //     };
 //
-//     https.createServer(credentials, app).listen(443, () => {
+//     https.createServer(credentials, index).listen(443, () => {
 //         console.log('HTTPS Server running on port 443');
 //     });
 //     http.createServer(function (req, res) {
@@ -194,6 +194,6 @@ app.post('/addConnections', async (req, res) => {
 //     console.log("PROCESSING...");
 // }
 const port = process.env.PORT || 5000;
-app.listen(port, () => {
+index.listen(port, () => {
   console.log("PORT 5000")
 });
