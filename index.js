@@ -108,7 +108,7 @@ index.use(session({
   saveUninitialized: true
 }))
 
-// index.use(cors);
+index.use(cors);
 index.use(bodyParser.json());
 index.use(morgan('combined'))
 index.use(passport.initialize());
