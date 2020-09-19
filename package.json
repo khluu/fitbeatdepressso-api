@@ -1,0 +1,34 @@
+{
+  "name": "fitbeatdepresso-api",
+  "version": "1.0.0",
+  "description": "A platform that helps predict and check your loved ones' mental health with Fitbit API",
+  "main": "/server/index.js",
+  "scripts": {
+    "start": "npm run build --prefix ./client && node ./server/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chrislevn/FitBeatDepresso.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chrislevn/FitBeatDepresso/issues"
+  },
+  "homepage": "https://github.com/chrislevn/FitBeatDepresso#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "lodash": "^4.17.20",
+    "mongoose": "^5.10.6",
+    "morgan": "^1.10.0",
+    "passport": "^0.4.1",
+    "passport-fitbit-oauth2": "^1.0.2",
+    "passport-local": "^1.0.0"
+  }
+}
+
