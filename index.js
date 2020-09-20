@@ -105,6 +105,9 @@ passport.use('local.signup',
 
 const index = express();
 
+index.use(express.json());
+index.use(express.urlencoded({extended: true}));
+
 index.use(session({
   secret: 'keyboard cat',
   resave: false,
@@ -120,7 +123,7 @@ index.use(function(req, res, next) {
 });
 
 // index.use(cors);
-index.use(bodyParser.json());
+// index.use(bodyParser.json());
 index.use(morgan('combined'))
 index.use(passport.initialize());
 index.use(passport.session());
