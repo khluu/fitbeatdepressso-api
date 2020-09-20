@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/chrislevn/FitBeatDepresso#readme",
   "dependencies": {
+    "@sendgrid/mail": "^7.2.6",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
@@ -26,6 +27,7 @@
     "lodash": "^4.17.20",
     "mongoose": "^5.10.6",
     "morgan": "^1.10.0",
+    "node-cron": "^2.0.3",
     "passport": "^0.4.1",
     "passport-fitbit-oauth2": "^1.0.2",
     "passport-local": "^1.0.0"

@@ -8,8 +8,10 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const mongo = require('mongoose');
 const morgan = require('morgan');
+const cron = require("node-cron");
 const bcrypt = require('bcrypt');
 const LocalStrategy = require('passport-local').Strategy;
+const sgMail = require('@sendgrid/mail');
 
 mongo.connect('mongodb+srv://ip333:1234567890@hackmit2020.bfaa8.mongodb.net/FitBeatDepresso?retryWrites=true&w=majority', {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false });
 
@@ -190,6 +192,13 @@ index.post('/updateMood', async (req, res) => {
     })
 })
 
+index.get('/getOwnProfile', async (req, res) => {
+    const user = await User.findById(req.user.id)
+    res.json({
+        user,
+    })
+})
+
 index.post('/addConnection', async (req, res) => {
     console.log("USER", req.user);
     console.log("isAuthenticated", req.isAuthenticated())
@@ -209,6 +218,29 @@ index.post('/addConnection', async (req, res) => {
       })
   }
 })
+
+cron.schedule("0 8 * * *", async function() {
+    console.log("running at 8 am");
+    const users = await User.find({});
+    for(var i = 0; i < users.length; i++){
+        // call machine leanring api
+        let score = 5
+        await User.findByIdAndUpdate(users[i].id, {moodScore: score})
+        if(score < 5 && (users[i].connections || []).length > 0){
+            sgMail.setApiKey('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');
+            const msg = {
+                to: users[i].connections.map(item => item.email),
+                from: 'fitbeatdepresso@gmail.com',
+                subject: 'Sending with Twilio SendGrid is Fun',
+                text: 'and easy to do anywhere, even with Node.js',
+                html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+            };
+            sgMail.send(msg);
+        }
+
+    }
+});
+
 
 // index.use(express.static(path.join(__dirname, '../client/build')));
 //
