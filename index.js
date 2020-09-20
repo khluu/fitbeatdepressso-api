@@ -160,21 +160,36 @@ index.post('/auth/local/signup',
       })
     });
 
-index.get('/getConnections', (req, res) => {
+index.get('/getConnections', async (req, res) => {
+    console.log('USER', req.user);
+    console.log('isAuthenticated', req.isAuthenticated());
   if(req.user){
-    var user = User.findById(req.user.id).populate('connections')
-    res.body = {
-      connections: user.connections,
-    }
+      const user = await User.findById(req.user.id).populate('connections')
+      console.log('user', user);
+      console.log('Connections', user.connections);
+    res.json({
+      connections: user.connections || [],
+    })
   }
   else{
-    res.redirect('/login');
+      res.status(401)
+      res.json({
+          message: 'Error logging in'
+      })
   }
 })
 
+index.post('/updateMood', async (req, res) => {
+    const {id, score} = req.body;
+    const user = await User.findByIdAndUpdate(id, {moodScore: score})
+    res.json({
+        message: "Success",
+    })
+})
+
 index.post('/addConnection', async (req, res) => {
-    console.log(req.user);
-    console.log(req.isAuthenticated())
+    console.log("USER", req.user);
+    console.log("isAuthenticated", req.isAuthenticated())
   if(req.user){
     const {email} = req.body;
     var invitee = await User.findOneAndUpdate({email}, {$push: {connections: req.user.id}});
